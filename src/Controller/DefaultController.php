@@ -24,7 +24,19 @@ class DefaultController extends AbstractController
     ) {        
         $this->imagefileManager = $imagefileManager;        
     }
+    
+    #[Route('/api/test', name: 'api_test')]
+    public function test(): Response
+    {
+        //$expiry_time = new \DateTime('2022-12-12 11:20:00');
+        $expiry_time = new \DateTime('2022-11-29 13:20:00');
+        $current_date = new \DateTime();
+        $diff = $expiry_time->diff($current_date);
 
+        echo ($diff->days > 0 ? ($diff->days . " dia(s) ") : "") .  $diff->format('%H hrs %I min'); die;
+
+        return new Response('');
+    }
 
     #[Route('/api/file/upload', name: 'file_upload', methods: ['POST'])]
     public function fileUpload(Request $request): Response
@@ -32,6 +44,9 @@ class DefaultController extends AbstractController
 
         $result = $this->imagefileManager->upload($request->files);
         if (!empty($result)) {
+
+            
+
             return new JsonResponse($this->serializeFile($result[0]));
         }
 
@@ -54,7 +69,7 @@ class DefaultController extends AbstractController
 
         return [
             "id"=>$file->getId(),
-            "name"=>$file->getName(),
+            "name"=>$file->getOriginalName(),
             "mime"=>$file->getMime(),
             "size"=>$file->getSize(),
             "driveId"=>$file->getDriveId()

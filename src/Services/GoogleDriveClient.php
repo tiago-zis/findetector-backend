@@ -15,7 +15,7 @@ class GoogleDriveClient
     public function getClient()
     {
         $secret = json_decode($_ENV['GOOGLE_CLIENT_SECRET'], true);
-        $client = new Client($secret['web']);
+        $client = new Client(isset($secret['web']) ? $secret['web'] : []);
         $client->setScopes(Drive::DRIVE);
         $client->setAccessType('offline');
         $client->setPrompt('select_account consent');

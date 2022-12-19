@@ -138,11 +138,29 @@ class ImagefileManager
         }
 
         $list = [];
+
+        foreach ($bag as
+            /** @var UploadedFile */
+            $uploadedFile) {
+            $file = $this->uploadToFolder($uploadedFile);
+            $list[] = $file;
+        }
+
+        return $list;
+    }
+
+    public function uploadDrive(FileBag $bag): ?array
+    {
+        if ($bag->count() === 0) {
+            return null;
+        }
+
+        $list = [];
         $driveMetaData = $this->getDriveMetaData();
 
         foreach ($bag as
-        /** @var UploadedFile */
-        $uploadedFile) {
+            /** @var UploadedFile */
+            $uploadedFile) {
             $file = $this->uploadToDrive($uploadedFile, $driveMetaData);
             $list[] = $file;
         }
@@ -182,6 +200,24 @@ class ImagefileManager
         $driveId = $driveFile->id;
         $d = new \DateTime();
         $file = new EntityFile($name, $mime, $size, $driveId, $this->user, $d);
+
+        $this->em->persist($file);
+        $this->em->flush();
+        return $file;
+    }
+
+    private function uploadToFolder(
+        UploadedFile $uploadedFile,
+    ): EntityFile {
+        $originalName = $uploadedFile->getClientOriginalName();
+        $clientMime = $uploadedFile->getClientMimeType();
+        $mime = $uploadedFile->guessExtension();
+        $size = $uploadedFile->getSize();
+
+        $name = 'img_' . time() . '.' . $mime;
+        $d = new \DateTime();
+        $uploadedFile->move($_ENV['FILE_UPLOAD_PATH'], $name);
+        $file = new EntityFile($originalName, $name, $clientMime, $size, null, $this->user, $d);
 
         $this->em->persist($file);
         $this->em->flush();
