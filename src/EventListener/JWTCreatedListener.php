@@ -40,7 +40,16 @@ class JWTCreatedListener
         $payload = $event->getData();
 
         $payload['username'] = $this->user ? $this->user->getName() : null;
-        
+        $payload['id'] = $this->user ? $this->user->getId() : null;
+        $file = $this->user ? $this->user->getImage() : null;
+
+        if ($file) {
+            $payload['image'] = [
+                "id" => $file->getId(),
+                "name" => $file->getName(),
+            ];
+        }
+
         $event->setData($payload);
 
         //$event->setHeader($header);

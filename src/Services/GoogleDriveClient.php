@@ -15,11 +15,15 @@ class GoogleDriveClient
     public function getClient()
     {
         $secret = json_decode($_ENV['GOOGLE_CLIENT_SECRET'], true);
-        $client = new Client(isset($secret['web']) ? $secret['web'] : []);
+        $token = json_decode($_ENV['GOOGLE_TOKEN'], true);
+        $client = new Client($secret && isset($secret['web']) ? $secret['web'] : []);
         $client->setScopes(Drive::DRIVE);
         $client->setAccessType('offline');
-        $client->setPrompt('select_account consent');
-        $client->setAccessToken(json_decode($_ENV['GOOGLE_TOKEN'], true));
+        $client->setPrompt('select_account consent');        
+
+        if ($token) {
+            $client->setAccessToken($token);
+        }        
         
         return $client;
     }

@@ -7,12 +7,14 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use App\Annotation\UserAware;
 use App\Filter\StatusFilter;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[UserAware(userFieldName: "createdby")]
 #[ApiResource(
     normalizationContext: ['groups' => ['read']],
     order: ['createdAt' => 'DESC']

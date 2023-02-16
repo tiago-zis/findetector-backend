@@ -25,9 +25,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 #[GetCollection(security: "is_granted('ROLE_ADMIN')")]
 #[Get(security: "is_granted('ROLE_USER')")]
-#[Post(security: "is_granted('ROLE_USER')")]
-#[Put(security: "is_granted('ROLE_USER')")]
-#[Patch(security: "is_granted('ROLE_USER')")]
+#[Post(security: "is_granted('ROLE_ADMIN')")]
+#[Put(securityPostDenormalize: "is_granted('ROLE_USER_EDIT', object)")]
+#[Patch(securityPostDenormalize: "is_granted('ROLE_USER_EDIT', object)")]
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -40,7 +40,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('read')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['read', 'write'])]
     private ?string $name = null;
 
@@ -66,9 +66,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'datetime')]
     private $createdAt;
-    
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $updatedAt;
+
+    #[ORM\Column(nullable: true)]
     #[Groups(['write'])]
     private $plainPassword;
+
+    #[ORM\ManyToOne(targetEntity: File::class, fetch:'EXTRA_LAZY'), ORM\JoinColumn(nullable: true)]
+    #[Groups('read')]
+    private ?File $image;
 
     public function getId(): ?int
     {
@@ -151,7 +159,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-    
+
     public function getName(): ?string
     {
         return $this->name;
@@ -193,6 +201,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
     public function __toString()
     {
         return $this->getEmail();
@@ -209,5 +229,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-    
+
+    public function getImage(): ?File
+    {
+        return $this->image;
+    }
+
+    public function setImage(?File $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
 }

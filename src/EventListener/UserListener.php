@@ -25,42 +25,39 @@ class UserListener
 
     public function prePersist(LifecycleEventArgs $args): void
     {
-        
         $entity = $args->getObject();
 
         if ($entity instanceof User) {
-            
+
             if ($entity->getId() === null && $entity->getCreatedAt() === null) {
                 $entity->setCreatedAt(new \DateTime());
             }
 
-            if ($entity->getPlainPassword()) {
-                $entity->setPassword(
-                    $this->userPasswordHasher->hashPassword(
-                        $entity,
-                        $entity->getPlainPassword()
-                    )
-                );
-            }
-
-            $this->checkRules($entity);           
+            $this->checkRules($entity);
         }
-        
     }
 
     public function preUpdate(LifecycleEventArgs $args): void
-    {    
-
+    {
         $entity = $args->getObject();
 
-        if ($entity instanceof User) {
+        if ($entity instanceof User) {            
+            $entity->setUpdatedAt(new \DateTime());
             $this->checkRules($entity);
         }
-
     }
 
-    private function checkRules($entity) 
-    {        
-        
+    private function checkRules($entity)
+    {
+        if ($entity->getPlainPassword()) {
+            $entity->setPassword(
+                $this->userPasswordHasher->hashPassword(
+                    $entity,
+                    $entity->getPlainPassword()
+                )
+            );
+
+            $entity->setPlainPassword(null);
+        }
     }
 }

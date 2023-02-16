@@ -20,6 +20,9 @@ doctrine:
             softdeleteable:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
                 enabled: true
+            appUserFilter:
+                class: App\Filter\UserFilter
+                enabled: true
 
 when@test:
     doctrine:

@@ -29,12 +29,13 @@ class ImageController extends AbstractController
     {
 
         $result = $this->imagefileManager->upload($request->files);
-
+        
         if (!empty($result) && $result[0] instanceof File) {
             $file = $result[0];
             $image = new Image();
             $image->setFile($file);
-
+            $image->setCreatedBy($this->getUser());
+            
             $entityManager->persist(($image));
             $entityManager->flush();
             return new JsonResponse($this->serializeFile($file));

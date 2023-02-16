@@ -26,7 +26,10 @@ class EntityBaseListener
 
         if ($entity instanceof EntityBase) {
             $entity->setCreatedAt(new DateTime());
-            $entity->setCreatedBy($this->user);
+            
+            if (!$entity->getCreatedBy()) {
+                $entity->setCreatedBy($this->user);
+            }            
         }
     }
 

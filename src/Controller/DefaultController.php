@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Services\ImagefileManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -54,12 +55,13 @@ class DefaultController extends AbstractController
     }
 
     #[Route('/api/file/restore/{id}', name: 'api_file_restore', methods: ['GET'])]
-    public function fileRestore(Request $request, $id): Response
+    public function fileRestore(Request $request, $id, EntityManagerInterface $entityManager): Response
     {
-        $response = $this->imagefileManager->restore((int) $id);
+        $image = $entityManager->getRepository(File::class)->find((int)$id);
 
-        if ($response) {
-            return $response;
+        if ($image) {
+            $name = $image->getName();
+            return $this->file($_ENV['FILE_UPLOAD_PATH'].$name);
         }
 
         return new Response('Upload file error!', 400);
