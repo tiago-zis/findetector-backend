@@ -77,6 +77,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(targetEntity: File::class, fetch:'EXTRA_LAZY'), ORM\JoinColumn(nullable: true)]
     #[Groups('read')]
     private ?File $image;
+    
+    #[ORM\OneToMany(targetEntity: UserTermsOfUse::class, mappedBy:'user')]
+    private Collection $termsOfUseList;
+
+    public function __construct()
+    {
+        $this->termsOfUseList = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -238,6 +246,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setImage(?File $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserTermsOfUse>
+     */
+    public function getTermsOfUseList(): Collection
+    {
+        return $this->termsOfUseList;
+    }
+
+    public function addTermsOfUseList(UserTermsOfUse $termsOfUseList): self
+    {
+        if (!$this->termsOfUseList->contains($termsOfUseList)) {
+            $this->termsOfUseList->add($termsOfUseList);
+            $termsOfUseList->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTermsOfUseList(UserTermsOfUse $termsOfUseList): self
+    {
+        if ($this->termsOfUseList->removeElement($termsOfUseList)) {
+            // set the owning side to null (unless already changed)
+            if ($termsOfUseList->getUser() === $this) {
+                $termsOfUseList->setUser(null);
+            }
+        }
 
         return $this;
     }
