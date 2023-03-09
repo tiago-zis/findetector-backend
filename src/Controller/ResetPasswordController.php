@@ -150,7 +150,7 @@ class ResetPasswordController extends AbstractController
         }
 
         $email = (new TemplatedEmail())
-            ->from(new Address('libgeo@univali.br', 'LibGeo Mail Bot'))
+            ->from(new Address($_ENV['MAIL_BOT_ADDRESS'], $_ENV['MAIL_BOT_NAME']))
             ->to($user->getEmail())
             ->subject('Your password reset request')
             ->htmlTemplate('reset_password/email.html.twig')

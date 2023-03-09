@@ -55,7 +55,7 @@ class RegistrationController extends AbstractController
             'app_verify_email',
             $user,
             (new TemplatedEmail())
-                ->from(new Address('libgeo@univali.br', 'LibGeo Mail Bot'))
+                ->from(new Address($_ENV['MAIL_BOT_ADDRESS'], $_ENV['MAIL_BOT_NAME']))
                 ->to($user->getEmail())
                 ->subject('Por favor confirme seu email')
                 ->htmlTemplate('registration/confirmation_email.html.twig')
