@@ -85,6 +85,8 @@ class DetectionProcessCommand extends Command
         $command = 'conda run -n ' . $condaEnv . ' --no-capture-output python ' . $script .
             '  --file="' . $filePath . '" --conn_string="' . $connString . '" --table_name="' . $table . '" --record_id=' . $id;
 
+        dump($command);die;
+
         $output = null;
         exec($command, $output);
 
